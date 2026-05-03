@@ -1,23 +1,25 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { GarconsController } from './garcons/garcons.controller';
-import { GarconsService } from './garcons/garcons.service';
-import { AdminController } from './admin/admin.controller';
-import { AdminService } from './admin/admin.service';
-import { ItensController } from './itens/itens.controller';
-import { ItensService } from './itens/itens.service';
-import { PedidosController } from './pedidos/pedidos.controller';
-import { PedidosService } from './pedidos/pedidos.service';
-import { MesasController } from './mesas/mesas.controller';
-import { MesasService } from './mesas/mesas.service';
-import { RestauranteController } from './restaurante/restaurante.controller';
-import { RestauranteService } from './restaurante/restaurante.service';
-import { ConfigModule } from '@nestjs/config';
+import { AdminModule } from './admin/admin.module';
+import { GarconsModule } from './garcons/garcons.module';
+import { ItensModule } from './itens/itens.module';
+import { PedidosModule } from './pedidos/pedidos.module';
+import { MesasModule } from './mesas/mesas.module';
+import { RestauranteModule } from './restaurante/restaurante.module';
 
 @Module({
-  imports: [ConfigModule.forRoot()],
-  controllers: [AppController, GarconsController, AdminController, ItensController, PedidosController, MesasController, RestauranteController],
-  providers: [AppService, GarconsService, AdminService, ItensService, PedidosService, MesasService, RestauranteService],
+  imports: [
+    ConfigModule.forRoot(),
+    AdminModule,
+    GarconsModule,
+    ItensModule,
+    PedidosModule,
+    MesasModule,
+    RestauranteModule,
+  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
