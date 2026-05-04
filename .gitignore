@@ -399,3 +399,6 @@ ANALYSIS.md
 dist
 .webpack
 .serverless/**/*.zip
+DETALHES_IMPLEMENTACAO.md
+/generated/prisma
+DOCUMENTACAO_PROJETO.md
