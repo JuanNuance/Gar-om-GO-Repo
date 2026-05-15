@@ -12,7 +12,9 @@ import { PedidoModule } from './modules/pedido/pedido.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true, 
+    }),
     AdministradorModule,
     RestauranteModule,
     AutenticacaoModule,

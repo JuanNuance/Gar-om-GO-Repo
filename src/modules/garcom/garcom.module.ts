@@ -1,26 +1,19 @@
 import { Module } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { BcryptHashService } from '../../common/infrastructure/seguranca/bcrypt-hash.service';
-import { IServicoHash } from '../../common/interfaces/servico-hash.interface';
-import { IGarcomRepository } from './domain/garcom.repository.interface';
-import { PrismaGarcomRepository } from './infrastructure/repositories/prisma-garcom.repository';
-import { CriarGarcomUseCase } from './application/criar-garcom.use-case';
 import { GarcomController } from './presentation/garcom.controller';
+import { CriarGarcomUseCase } from './application/criar-garcom.use-case';
+import { PgGarcomRepository } from './infrastructure/repositories/pg-garcom.repository';
+import { GARCOM_REPOSITORY } from './domain/garcom.repository.interface';
+import { DatabaseService } from '../../common/infrastructure/database/database.service';
 
 @Module({
   controllers: [GarcomController],
   providers: [
-    PrismaService,
+    DatabaseService,
     CriarGarcomUseCase,
     {
-      provide: IGarcomRepository,
-      useClass: PrismaGarcomRepository,
-    },
-    {
-      provide: IServicoHash,
-      useClass: BcryptHashService,
+      provide: GARCOM_REPOSITORY,
+      useClass: PgGarcomRepository,
     },
   ],
-  exports: [IGarcomRepository],
 })
 export class GarcomModule {}

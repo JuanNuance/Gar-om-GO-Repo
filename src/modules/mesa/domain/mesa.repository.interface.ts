@@ -1,9 +1,10 @@
 import { Mesa } from './mesa.entity';
 
-export abstract class IMesaRepository {
-  abstract salvar(mesa: Mesa): Promise<void>;
-  abstract buscarPorNumero(numero: number, restauranteId: string): Promise<Mesa | null>;
-  abstract buscarTodasPorRestauranteId(restauranteId: string): Promise<Mesa[]>;
-  abstract buscarPorId(id: string): Promise<Mesa | null>;
-  abstract deletar(id: string): Promise<void>;
+export interface IMesaRepository {
+  criar(mesa: Mesa): Promise<Mesa>;
+  listarTodas(): Promise<Mesa[]>;
+  buscarPorId(id: string): Promise<Mesa | null>;
+  alterarStatus(id: string, status: string): Promise<Mesa>;
 }
+
+export const MESA_REPOSITORY = Symbol('MESA_REPOSITORY');

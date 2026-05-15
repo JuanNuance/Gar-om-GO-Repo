@@ -1,56 +1,20 @@
-import { Injectable, ConflictException } from '@nestjs/common';
-import { IRestauranteRepository } from '../domain/restaurante.repository.interface';
-import { IAdministradorRepository } from '../../administrador/domain/administrador.repository.interface';
-import { IServicoHash } from '../../../common/interfaces/servico-hash.interface';
-import { CriarRestauranteComAdministradorDto } from './dto/criar-restaurante-com-administrador.dto';
+import { Injectable, Inject } from '@nestjs/common';
+import type { IRestauranteRepository } from '../domain/restaurante.repository.interface';
+import { RESTAURANTE_REPOSITORY } from '../domain/restaurante.repository.interface';
+import { CriarRestauranteDto } from './dto/criar-restaurante.dto';
 import { Restaurante } from '../domain/restaurante.entity';
-import { Administrador } from '../../administrador/domain/administrador.entity';
-import { randomUUID } from 'node:crypto';
+import { gerarId } from '../../../common/utils/gerador-id.util';
 
 @Injectable()
 export class CriarRestauranteUseCase {
   constructor(
-    private readonly restauranteRepo: IRestauranteRepository,
-    private readonly administradorRepo: IAdministradorRepository,
-    private readonly hashService: IServicoHash,
+    @Inject(RESTAURANTE_REPOSITORY)
+    private readonly restauranteRepository: IRestauranteRepository,
   ) {}
 
-  async execute(dto: CriarRestauranteComAdministradorDto) {
-    const restauranteExists = await this.restauranteRepo.findByCnpj(dto.cnpj);
-    if (restauranteExists) {
-      throw new ConflictException('Restaurante com este CNPJ já existe');
-    }
-
-    const administradorExists = await this.administradorRepo.findByEmail(dto.emailAdministrador);
-    if (administradorExists) {
-      throw new ConflictException('Administrador com este email já existe');
-    }
-
-    const restauranteId = randomUUID();
-    const administradorId = randomUUID();
-
-    const passwordHash = await this.hashService.gerarHash(dto.senhaAdministrador);
-
-    const restaurante = new Restaurante(
-      restauranteId,
-      dto.nomeRestaurante,
-      dto.cnpj,
-      dto.endereco,
-      new Date(),
-    );
-
-    const administrador = new Administrador(
-      administradorId,
-      dto.nomeAdministrador,
-      dto.emailAdministrador,
-      passwordHash,
-      restauranteId,
-    );
-
-    // Persistência
-    await this.restauranteRepo.save(restaurante);
-    await this.administradorRepo.save(administrador);
-
-    return { restaurante, administrador };
+  async executar(dados: CriarRestauranteDto): Promise<Restaurante> {
+    const id = await gerarId();
+    const restaurante = new Restaurante(id, dados.nome, dados.cnpj, dados.endereco);
+    return this.restauranteRepository.criar(restaurante);
   }
 }

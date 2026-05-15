@@ -402,3 +402,5 @@ dist
 DETALHES_IMPLEMENTACAO.md
 /generated/prisma
 DOCUMENTACAO_PROJETO.md
+
+init-db.sql

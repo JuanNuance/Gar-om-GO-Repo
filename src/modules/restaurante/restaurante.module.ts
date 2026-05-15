@@ -1,26 +1,18 @@
 import { Module } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { AdministradorModule } from '../administrador/administrador.module';
-import { BcryptHashService } from '../../common/infrastructure/seguranca/bcrypt-hash.service';
-import { IServicoHash } from '../../common/interfaces/servico-hash.interface';
-import { IRestauranteRepository } from './domain/restaurante.repository.interface';
-import { PrismaRestauranteRepository } from './infrastructure/repositories/prisma-restaurante.repository';
-import { CriarRestauranteUseCase } from './application/criar-restaurante.use-case';
 import { RestauranteController } from './presentation/restaurante.controller';
+import { CriarRestauranteUseCase } from './application/criar-restaurante.use-case';
+import { PgRestauranteRepository } from './infrastructure/repositories/pg-restaurante.repository';
+import { RESTAURANTE_REPOSITORY } from './domain/restaurante.repository.interface';
+import { DatabaseService } from '../../common/infrastructure/database/database.service';
 
 @Module({
-  imports: [AdministradorModule],
   controllers: [RestauranteController],
   providers: [
-    PrismaService,
+    DatabaseService,
     CriarRestauranteUseCase,
     {
-      provide: IRestauranteRepository,
-      useClass: PrismaRestauranteRepository,
-    },
-    {
-      provide: IServicoHash,
-      useClass: BcryptHashService,
+      provide: RESTAURANTE_REPOSITORY,
+      useClass: PgRestauranteRepository,
     },
   ],
 })
