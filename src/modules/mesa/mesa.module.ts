@@ -1,20 +1,19 @@
 import { Module } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { IMesaRepository } from './domain/mesa.repository.interface';
-import { PrismaMesaRepository } from './infrastructure/repositories/prisma-mesa.repository';
-import { CriarMesaUseCase } from './application/criar-mesa.use-case';
 import { MesaController } from './presentation/mesa.controller';
+import { CriarMesaUseCase } from './application/criar-mesa.use-case';
+import { PgMesaRepository } from './infrastructure/repositories/pg-mesa.repository';
+import { MESA_REPOSITORY } from './domain/mesa.repository.interface';
+import { DatabaseService } from '../../common/infrastructure/database/database.service';
 
 @Module({
   controllers: [MesaController],
   providers: [
-    PrismaService,
+    DatabaseService,
     CriarMesaUseCase,
     {
-      provide: IMesaRepository,
-      useClass: PrismaMesaRepository,
+      provide: MESA_REPOSITORY,
+      useClass: PgMesaRepository,
     },
   ],
-  exports: [IMesaRepository],
 })
 export class MesaModule {}

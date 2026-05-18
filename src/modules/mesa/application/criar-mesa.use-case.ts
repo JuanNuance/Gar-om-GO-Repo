@@ -1,28 +1,20 @@
-import { Injectable, ConflictException } from '@nestjs/common';
-import { IMesaRepository } from '../domain/mesa.repository.interface';
+import { Injectable, Inject } from '@nestjs/common';
+import type { IMesaRepository } from '../domain/mesa.repository.interface';
+import { MESA_REPOSITORY } from '../domain/mesa.repository.interface';
 import { CriarMesaDto } from './dto/criar-mesa.dto';
-import { Mesa } from '../domain/mesa.entity';
-import { randomUUID } from 'node:crypto';
+import { Mesa, StatusMesa } from '../domain/mesa.entity';
+import { gerarId } from '../../../common/utils/gerador-id.util';
 
 @Injectable()
 export class CriarMesaUseCase {
-  constructor(private readonly mesaRepo: IMesaRepository) {}
+  constructor(
+    @Inject(MESA_REPOSITORY)
+    private readonly mesaRepository: IMesaRepository,
+  ) {}
 
-  async execute(dto: CriarMesaDto, restauranteId: string) {
-    const mesaExistente = await this.mesaRepo.buscarPorNumero(dto.numero, restauranteId);
-    if (mesaExistente) {
-      throw new ConflictException(`Mesa número ${dto.numero} já existe neste restaurante`);
-    }
-
-    const mesa = new Mesa(
-      randomUUID(),
-      dto.numero,
-      dto.capacidade,
-      restauranteId,
-    );
-
-    await this.mesaRepo.salvar(mesa);
-
-    return mesa;
+  async executar(dados: CriarMesaDto): Promise<Mesa> {
+    const id = await gerarId();
+    const mesa = new Mesa(id, dados.numero, dados.capacidade, StatusMesa.DISPONIVEL, dados.restauranteId);
+    return this.mesaRepository.criar(mesa);
   }
 }

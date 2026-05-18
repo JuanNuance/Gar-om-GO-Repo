@@ -1,4 +1,5 @@
-import { IsString, IsNumber, IsNotEmpty, IsOptional, Min } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Min } from 'class-validator';
+import { CategoriaItem } from '../../domain/item.entity';
 
 export class CriarItemDto {
   @IsString()
@@ -11,6 +12,13 @@ export class CriarItemDto {
 
   @IsNumber()
   @Min(0)
-  @IsNotEmpty()
   preco: number;
+
+  @IsEnum(CategoriaItem)
+  @IsNotEmpty()
+  categoria: CategoriaItem;
+
+  @IsUUID()
+  @IsNotEmpty()
+  restauranteId: string;
 }

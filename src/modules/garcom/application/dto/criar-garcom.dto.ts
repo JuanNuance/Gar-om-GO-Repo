@@ -1,4 +1,4 @@
-import { IsEmail, IsString, MinLength, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, IsUUID, MinLength } from 'class-validator';
 
 export class CriarGarcomDto {
   @IsString()
@@ -6,9 +6,14 @@ export class CriarGarcomDto {
   nome: string;
 
   @IsEmail()
+  @IsNotEmpty()
   email: string;
 
   @IsString()
   @MinLength(6)
-  password: string;
+  senha: string;
+
+  @IsUUID()
+  @IsNotEmpty()
+  restauranteId: string;
 }

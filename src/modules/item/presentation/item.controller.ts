@@ -1,37 +1,26 @@
-import {
-  Controller,
-  Post,
-  Body,
-  UseGuards,
-  Request,
-  Get,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { CriarItemUseCase } from '../application/criar-item.use-case';
 import { CriarItemDto } from '../application/dto/criar-item.dto';
-import { JwtAutenticacaoGuard } from '../../../common/guards/jwt-autenticacao.guard';
-import { CargosGuard } from '../../../common/guards/cargos.guard';
-import { Cargos } from '../../../common/decorators/cargos.decorator';
-import { IItemRepository } from '../domain/item.repository.interface';
+import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
+import { Inject } from '@nestjs/common';
+import type { IItemRepository } from '../domain/item.repository.interface';
+import { ITEM_REPOSITORY } from '../domain/item.repository.interface';
 
+@UseGuards(JwtAuthGuard)
 @Controller('itens')
 export class ItemController {
   constructor(
     private readonly criarItemUseCase: CriarItemUseCase,
-    private readonly itemRepo: IItemRepository,
+    @Inject(ITEM_REPOSITORY) private readonly itemRepository: IItemRepository
   ) {}
 
   @Post()
-  @UseGuards(JwtAutenticacaoGuard, CargosGuard)
-  @Cargos('ADMIN')
-  async criar(@Body() dto: CriarItemDto, @Request() req) {
-    const { restauranteId } = req.user;
-    return this.criarItemUseCase.execute(dto, restauranteId);
+  criar(@Body() criarItemDto: CriarItemDto) {
+    return this.criarItemUseCase.executar(criarItemDto);
   }
 
-  @Get()
-  @UseGuards(JwtAutenticacaoGuard)
-  async listarTodos(@Request() req) {
-    const { restauranteId } = req.user;
-    return this.itemRepo.buscarTodosPorRestauranteId(restauranteId);
+  @Get('restaurante/:id')
+  listar(@Param('id') id: string) {
+    return this.itemRepository.listarPorRestaurante(id);
   }
 }

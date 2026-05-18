@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { IAdministradorRepository } from '../../administrador/domain/administrador.repository.interface';
-import { IServicoHash } from '../../../common/interfaces/servico-hash.interface';
+import { IHashService } from '../../../common/interfaces/hash-service.interface';
 import { ITokenService } from '../domain/token-servico.interface';
 import { LoginDto } from './dto/login.dto';
 
@@ -8,7 +8,7 @@ import { LoginDto } from './dto/login.dto';
 export class LoginUseCase {
   constructor(
     private readonly administradorRepo: IAdministradorRepository,
-    private readonly servicoHash: IServicoHash,
+    private readonly servicoHash: IHashService,
     private readonly tokenService: ITokenService,
   ) {}
 
@@ -18,7 +18,7 @@ export class LoginUseCase {
       throw new UnauthorizedException('Credenciais inválidas');
     }
 
-    const senhaCorreta = await this.servicoHash.comparar(
+    const senhaCorreta = await this.servicoHash.compare(
       dto.password,
       administrador.passwordHash,
     );

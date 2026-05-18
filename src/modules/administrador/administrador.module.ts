@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { DatabaseService } from '../../common/infrastructure/database/database.service';
 import { IAdministradorRepository } from './domain/administrador.repository.interface';
-import { PrismaAdministradorRepository } from './infrastructure/repositories/prisma-administrador.repository';
+import { PgAdministradorRepository } from './infrastructure/repositories/pg-administrador.repository';
 
 @Module({
   providers: [
-    PrismaService,
+    DatabaseService,
     {
       provide: IAdministradorRepository,
-      useClass: PrismaAdministradorRepository,
+      useClass: PgAdministradorRepository,
     },
   ],
   exports: [IAdministradorRepository],

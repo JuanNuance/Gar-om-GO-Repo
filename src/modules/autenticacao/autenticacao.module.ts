@@ -8,8 +8,8 @@ import { LoginUseCase } from './application/login.use-case';
 import { ITokenService } from './domain/token-servico.interface';
 import { NestJwtService } from './infrastructure/nest-jwt.service';
 import { JwtStrategy } from './infrastructure/strategies/jwt.strategy';
-import { IServicoHash } from '../../common/interfaces/servico-hash.interface';
-import { BcryptHashService } from '../../common/infrastructure/seguranca/bcrypt-hash.service';
+import { IHashService } from '../../common/interfaces/hash-service.interface';
+import { BcryptHashService } from '../../common/infrastructure/security/bcrypt-hash.service';
 
 @Module({
   imports: [
@@ -33,7 +33,7 @@ import { BcryptHashService } from '../../common/infrastructure/seguranca/bcrypt-
       useClass: NestJwtService,
     },
     {
-      provide: IServicoHash,
+      provide: IHashService,
       useClass: BcryptHashService,
     },
   ],

@@ -1,31 +1,25 @@
-import {
-  Controller,
-  Post,
-  Body,
-  UseGuards,
-  Request,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards, Inject } from '@nestjs/common';
 import { CriarGarcomUseCase } from '../application/criar-garcom.use-case';
 import { CriarGarcomDto } from '../application/dto/criar-garcom.dto';
-import { JwtAutenticacaoGuard } from '../../../common/guards/jwt-autenticacao.guard';
-import { CargosGuard } from '../../../common/guards/cargos.guard';
-import { Cargos } from '../../../common/decorators/cargos.decorator';
+import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
+import type { IGarcomRepository } from '../domain/garcom.repository.interface';
+import { GARCOM_REPOSITORY } from '../domain/garcom.repository.interface';
 
 @Controller('garcom')
 export class GarcomController {
-  constructor(private readonly criarGarcomUseCase: CriarGarcomUseCase) {}
+  constructor(
+    private readonly criarGarcomUseCase: CriarGarcomUseCase,
+    @Inject(GARCOM_REPOSITORY) private readonly garcomRepository: IGarcomRepository,
+  ) {}
 
   @Post()
-  @UseGuards(JwtAutenticacaoGuard, CargosGuard)
-  @Cargos('ADMIN')
-  async criar(@Body() dto: CriarGarcomDto, @Request() req) {
-    // O restauranteId vem do payload do token JWT
-    const { restauranteId } = req.user;
-    
-    const result = await this.criarGarcomUseCase.execute(dto, restauranteId);
-    
-    // Ocultar hash da senha no retorno
-    const { passwordHash, ...garcomSemHash } = result;
-    return garcomSemHash;
+  criar(@Body() dto: CriarGarcomDto) {
+    return this.criarGarcomUseCase.executar(dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('restaurante/:id')
+  listar(@Param('id') id: string) {
+    return this.garcomRepository.listarPorRestaurante(id);
   }
 }

@@ -1,20 +1,25 @@
 import { Module } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { IPedidoRepository } from './domain/pedido.repository.interface';
-import { PrismaPedidoRepository } from './infrastructure/repositories/prisma-pedido.repository';
-import { CriarPedidoUseCase } from './application/criar-pedido.use-case';
 import { PedidoController } from './presentation/pedido.controller';
+import { CriarPedidoUseCase } from './application/criar-pedido.use-case';
+import { AdicionarItemPedidoUseCase } from './application/adicionar-item-pedido.use-case';
+import { AlterarStatusPedidoUseCase } from './application/alterar-status-pedido.use-case';
+import { PgPedidoRepository } from './infrastructure/repositories/pg-pedido.repository';
+import { PEDIDO_REPOSITORY } from './domain/pedido.repository.interface';
+import { DatabaseService } from '../../common/infrastructure/database/database.service';
+import { ItemModule } from '../item/item.module';
 
 @Module({
+  imports: [ItemModule],
   controllers: [PedidoController],
   providers: [
-    PrismaService,
+    DatabaseService,
     CriarPedidoUseCase,
+    AdicionarItemPedidoUseCase,
+    AlterarStatusPedidoUseCase,
     {
-      provide: IPedidoRepository,
-      useClass: PrismaPedidoRepository,
+      provide: PEDIDO_REPOSITORY,
+      useClass: PgPedidoRepository,
     },
   ],
-  exports: [IPedidoRepository],
 })
 export class PedidoModule {}

@@ -1,21 +1,23 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Body, Controller, Get, Post, Inject } from '@nestjs/common';
 import { CriarRestauranteUseCase } from '../application/criar-restaurante.use-case';
-import { CriarRestauranteComAdministradorDto } from '../application/dto/criar-restaurante-com-administrador.dto';
+import { CriarRestauranteDto } from '../application/dto/criar-restaurante.dto';
+import type { IRestauranteRepository } from '../domain/restaurante.repository.interface';
+import { RESTAURANTE_REPOSITORY } from '../domain/restaurante.repository.interface';
 
 @Controller('restaurantes')
 export class RestauranteController {
-  constructor(private readonly criarRestauranteUseCase: CriarRestauranteUseCase) {}
+  constructor(
+    private readonly criarRestauranteUseCase: CriarRestauranteUseCase,
+    @Inject(RESTAURANTE_REPOSITORY) private readonly restauranteRepository: IRestauranteRepository,
+  ) {}
 
   @Post()
-  async create(@Body() dto: CriarRestauranteComAdministradorDto) {
-    const result = await this.criarRestauranteUseCase.execute(dto);
-    
-    // Ocultar hash da senha no retorno
-    const { passwordHash, ...administradorSemHash } = result.administrador;
-    
-    return {
-      restaurante: result.restaurante,
-      administrador: administradorSemHash,
-    };
+  criar(@Body() dto: CriarRestauranteDto) {
+    return this.criarRestauranteUseCase.executar(dto);
+  }
+
+  @Get()
+  listar() {
+    return this.restauranteRepository.listarTodos();
   }
 }

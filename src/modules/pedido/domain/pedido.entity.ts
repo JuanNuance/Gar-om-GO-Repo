@@ -1,19 +1,18 @@
-export class ItemPedido {
-  constructor(
-    public readonly id: string,
-    public readonly pedidoId: string,
-    public readonly itemId: string,
-    public readonly quantidade: number,
-  ) {}
+export enum StatusPedido {
+  PENDENTE = 'PENDENTE',
+  PREPARANDO = 'PREPARANDO',
+  ENTREGUE = 'ENTREGUE',
+  FINALIZADO = 'FINALIZADO',
+  CANCELADO = 'CANCELADO',
 }
 
 export class Pedido {
   constructor(
     public readonly id: string,
+    public readonly status: StatusPedido,
+    public readonly valorTotal: number,
     public readonly mesaId: string,
     public readonly garcomId: string,
-    public readonly status: string, // ABERTO, FECHADO, CANCELADO
-    public readonly itens: ItemPedido[],
     public readonly createdAt: Date,
   ) {}
 }

@@ -1,29 +1,20 @@
-import { Injectable, ConflictException } from '@nestjs/common';
-import { IItemRepository } from '../domain/item.repository.interface';
+import { Injectable, Inject } from '@nestjs/common';
+import type { IItemRepository } from '../domain/item.repository.interface';
+import { ITEM_REPOSITORY } from '../domain/item.repository.interface';
 import { CriarItemDto } from './dto/criar-item.dto';
 import { Item } from '../domain/item.entity';
-import { randomUUID } from 'node:crypto';
+import { gerarId } from '../../../common/utils/gerador-id.util';
 
 @Injectable()
 export class CriarItemUseCase {
-  constructor(private readonly itemRepo: IItemRepository) {}
+  constructor(
+    @Inject(ITEM_REPOSITORY)
+    private readonly itemRepository: IItemRepository,
+  ) {}
 
-  async execute(dto: CriarItemDto, restauranteId: string) {
-    const itemExistente = await this.itemRepo.buscarPorNome(dto.nome, restauranteId);
-    if (itemExistente) {
-      throw new ConflictException(`Item com nome "${dto.nome}" já existe neste restaurante`);
-    }
-
-    const item = new Item(
-      randomUUID(),
-      dto.nome,
-      dto.descricao || null,
-      dto.preco,
-      restauranteId,
-    );
-
-    await this.itemRepo.salvar(item);
-
-    return item;
+  async executar(dados: CriarItemDto): Promise<Item> {
+    const id = await gerarId();
+    const item = new Item(id, dados.nome, dados.descricao || null, dados.preco, dados.categoria, dados.restauranteId);
+    return this.itemRepository.criar(item);
   }
 }

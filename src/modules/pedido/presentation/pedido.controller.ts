@@ -1,37 +1,41 @@
-import {
-  Controller,
-  Post,
-  Body,
-  UseGuards,
-  Request,
-  Get,
-  Param,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards, Inject } from '@nestjs/common';
 import { CriarPedidoUseCase } from '../application/criar-pedido.use-case';
+import { AdicionarItemPedidoUseCase } from '../application/adicionar-item-pedido.use-case';
+import { AlterarStatusPedidoUseCase } from '../application/alterar-status-pedido.use-case';
 import { CriarPedidoDto } from '../application/dto/criar-pedido.dto';
-import { JwtAutenticacaoGuard } from '../../../common/guards/jwt-autenticacao.guard';
-import { CargosGuard } from '../../../common/guards/cargos.guard';
-import { Cargos } from '../../../common/decorators/cargos.decorator';
-import { IPedidoRepository } from '../domain/pedido.repository.interface';
+import { AdicionarItemPedidoDto } from '../application/dto/adicionar-item-pedido.dto';
+import { StatusPedido } from '../domain/pedido.entity';
+import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
+import type { IPedidoRepository } from '../domain/pedido.repository.interface';
+import { PEDIDO_REPOSITORY } from '../domain/pedido.repository.interface';
 
+@UseGuards(JwtAuthGuard)
 @Controller('pedidos')
 export class PedidoController {
   constructor(
     private readonly criarPedidoUseCase: CriarPedidoUseCase,
-    private readonly pedidoRepo: IPedidoRepository,
+    private readonly adicionarItemUseCase: AdicionarItemPedidoUseCase,
+    private readonly alterarStatusUseCase: AlterarStatusPedidoUseCase,
+    @Inject(PEDIDO_REPOSITORY) private readonly pedidoRepository: IPedidoRepository,
   ) {}
 
   @Post()
-  @UseGuards(JwtAutenticacaoGuard, CargosGuard)
-  @Cargos('WAITER', 'ADMIN')
-  async criar(@Body() dto: CriarPedidoDto, @Request() req) {
-    const { sub: garcomId } = req.user; // sub geralmente é o ID do usuário no JWT
-    return this.criarPedidoUseCase.execute(dto, garcomId);
+  criar(@Body() criarPedidoDto: CriarPedidoDto) {
+    return this.criarPedidoUseCase.executar(criarPedidoDto);
   }
 
-  @Get('mesa/:mesaId')
-  @UseGuards(JwtAutenticacaoGuard)
-  async listarPorMesa(@Param('mesaId') mesaId: string) {
-    return this.pedidoRepo.buscarTodosPorMesa(mesaId);
+  @Post('item')
+  adicionarItem(@Body() dto: AdicionarItemPedidoDto) {
+    return this.adicionarItemUseCase.executar(dto);
+  }
+
+  @Patch(':id/status')
+  alterarStatus(@Param('id') id: string, @Body('status') status: StatusPedido) {
+    return this.alterarStatusUseCase.executar(id, status);
+  }
+
+  @Get('restaurante/:id')
+  listarPorRestaurante(@Param('id') id: string) {
+    return this.pedidoRepository.listarPorRestaurante(id);
   }
 }

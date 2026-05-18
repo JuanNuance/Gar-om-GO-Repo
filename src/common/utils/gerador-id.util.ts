@@ -1,3 +1,5 @@
-import { nanoid } from 'nanoid';
+export const gerarId = async () => {
+  const { nanoid } = await import('nanoid');
+  return nanoid();
+};
 
-export const gerarId = () => nanoid();

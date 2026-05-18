@@ -1,9 +1,8 @@
 import { Garcom } from './garcom.entity';
 
-export abstract class IGarcomRepository {
-  abstract save(garcom: Garcom): Promise<void>;
-  abstract findByEmail(email: string): Promise<Garcom | null>;
-  abstract findAllByRestauranteId(restauranteId: string): Promise<Garcom[]>;
-  abstract findById(id: string): Promise<Garcom | null>;
-  abstract delete(id: string): Promise<void>;
+export interface IGarcomRepository {
+  criar(garcom: Garcom): Promise<Garcom>;
+  listarPorRestaurante(restauranteId: string): Promise<Garcom[]>;
 }
+
+export const GARCOM_REPOSITORY = Symbol('GARCOM_REPOSITORY');

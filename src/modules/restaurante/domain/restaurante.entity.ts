@@ -4,6 +4,5 @@ export class Restaurante {
     public readonly nome: string,
     public readonly cnpj: string,
     public readonly endereco: string,
-    public readonly createdAt: Date,
   ) {}
 }
