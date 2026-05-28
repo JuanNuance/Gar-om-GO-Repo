@@ -33,6 +33,14 @@ export class PgMesaRepository implements IMesaRepository {
     return result.rows.map((row) => this.mapToDomain(row));
   }
 
+  async listarPorRestaurante(restauranteId: string): Promise<Mesa[]> {
+    const result = await this.databaseService.query<Mesa>(
+      `SELECT * FROM mesa WHERE restaurante_id = $1 ORDER BY numero ASC`,
+      [restauranteId],
+    );
+    return result.rows.map((row) => this.mapToDomain(row));
+  }
+
   async buscarPorId(id: string): Promise<Mesa | null> {
     const result = await this.databaseService.query<Mesa>(
       `SELECT * FROM mesa WHERE id = $1`,

@@ -1,15 +1,13 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards, Inject } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Inject, Delete } from '@nestjs/common';
 import { CriarPedidoUseCase } from '../application/criar-pedido.use-case';
 import { AdicionarItemPedidoUseCase } from '../application/adicionar-item-pedido.use-case';
 import { AlterarStatusPedidoUseCase } from '../application/alterar-status-pedido.use-case';
 import { CriarPedidoDto } from '../application/dto/criar-pedido.dto';
 import { AdicionarItemPedidoDto } from '../application/dto/adicionar-item-pedido.dto';
 import { StatusPedido } from '../domain/pedido.entity';
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
 import type { IPedidoRepository } from '../domain/pedido.repository.interface';
 import { PEDIDO_REPOSITORY } from '../domain/pedido.repository.interface';
 
-@UseGuards(JwtAuthGuard)
 @Controller('pedidos')
 export class PedidoController {
   constructor(
@@ -37,5 +35,26 @@ export class PedidoController {
   @Get('restaurante/:id')
   listarPorRestaurante(@Param('id') id: string) {
     return this.pedidoRepository.listarPorRestaurante(id);
+  }
+
+  @Patch(':pedidoId/item/:itemId')
+  atualizarItem(
+    @Param('pedidoId') pedidoId: string,
+    @Param('itemId') itemId: string,
+    @Body() dto: any,
+  ) {
+    const quantidade = dto.quantidade as number;
+    const observacoes = dto.observacoes as string | undefined;
+    return this.pedidoRepository.atualizarItem(pedidoId, itemId, quantidade, observacoes);
+  }
+
+  @Delete(':pedidoId/item/:itemId')
+  removerItem(@Param('pedidoId') pedidoId: string, @Param('itemId') itemId: string) {
+    return this.pedidoRepository.removerItem(pedidoId, itemId);
+  }
+
+  @Get('mesa/:mesaId')
+  listarPorMesa(@Param('mesaId') mesaId: string) {
+    return this.pedidoRepository.listarPorMesa(mesaId);
   }
 }

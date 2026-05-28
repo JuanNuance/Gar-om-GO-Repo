@@ -46,6 +46,57 @@ export class PgPedidoRepository implements IPedidoRepository {
     });
   }
 
+  async atualizarItem(pedidoId: string, itemId: string, quantidade: number, observacoes?: string): Promise<void> {
+    await this.databaseService.transaction(async (client: PoolClient) => {
+      // Buscar item atual
+      const res = await client.query(
+        `SELECT quantidade, preco_unitario FROM pedido_item WHERE pedido_id = $1 AND item_id = $2 FOR UPDATE`,
+        [pedidoId, itemId],
+      );
+
+      if (res.rowCount === 0) {
+        throw new Error('Item não encontrado no pedido');
+      }
+
+      const atual = res.rows[0];
+      const quantidadeAtual = Number(atual.quantidade || 0);
+      const precoUnitario = Number(atual.preco_unitario || 0);
+
+      const delta = (quantidade - quantidadeAtual) * precoUnitario;
+
+      await client.query(
+        `UPDATE pedido_item SET quantidade = $1${observacoes ? ', observacoes = $4' : ''} WHERE pedido_id = $2 AND item_id = $3`,
+        observacoes ? [quantidade, pedidoId, itemId, observacoes] : [quantidade, pedidoId, itemId],
+      );
+
+      if (delta !== 0) {
+        await client.query(`UPDATE pedido SET valor_total = valor_total + $1 WHERE id = $2`, [delta, pedidoId]);
+      }
+    });
+  }
+
+  async removerItem(pedidoId: string, itemId: string): Promise<void> {
+    await this.databaseService.transaction(async (client: PoolClient) => {
+      const res = await client.query(
+        `SELECT quantidade, preco_unitario FROM pedido_item WHERE pedido_id = $1 AND item_id = $2 FOR UPDATE`,
+        [pedidoId, itemId],
+      );
+
+      if (res.rowCount === 0) {
+        throw new Error('Item não encontrado no pedido');
+      }
+
+      const row = res.rows[0];
+      const quantidade = Number(row.quantidade || 0);
+      const precoUnitario = Number(row.preco_unitario || 0);
+      const valorRemover = quantidade * precoUnitario;
+
+      await client.query(`DELETE FROM pedido_item WHERE pedido_id = $1 AND item_id = $2`, [pedidoId, itemId]);
+
+      await client.query(`UPDATE pedido SET valor_total = valor_total - $1 WHERE id = $2`, [valorRemover, pedidoId]);
+    });
+  }
+
   async alterarStatus(id: string, status: StatusPedido): Promise<Pedido> {
     const result = await this.databaseService.query(
       `UPDATE pedido SET status = $1 WHERE id = $2 RETURNING *`,
@@ -61,6 +112,16 @@ export class PgPedidoRepository implements IPedidoRepository {
        WHERE m.restaurante_id = $1
        ORDER BY p.created_at DESC`,
       [restauranteId],
+    );
+    return result.rows.map((row) => this.mapToDomain(row));
+  }
+
+  async listarPorMesa(mesaId: string): Promise<Pedido[]> {
+    const result = await this.databaseService.query(
+      `SELECT p.* FROM pedido p
+       WHERE p.mesa_id = $1
+       ORDER BY p.created_at DESC`,
+      [mesaId],
     );
     return result.rows.map((row) => this.mapToDomain(row));
   }

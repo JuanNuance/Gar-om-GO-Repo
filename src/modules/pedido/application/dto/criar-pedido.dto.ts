@@ -1,11 +1,11 @@
-import { IsNotEmpty, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CriarPedidoDto {
-  @IsUUID()
+  @IsString()
   @IsNotEmpty()
   mesaId: string;
 
-  @IsUUID()
+  @IsString()
   @IsNotEmpty()
   garcomId: string;
 }

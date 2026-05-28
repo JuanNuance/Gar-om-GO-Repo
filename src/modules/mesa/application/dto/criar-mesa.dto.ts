@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsUUID, Min } from 'class-validator';
+import { IsInt, IsNotEmpty, IsString, Min } from 'class-validator';
 
 export class CriarMesaDto {
   @IsInt()
@@ -11,7 +11,7 @@ export class CriarMesaDto {
   @IsNotEmpty()
   capacidade: number;
 
-  @IsUUID()
+  @IsString()
   @IsNotEmpty()
   restauranteId: string;
 }

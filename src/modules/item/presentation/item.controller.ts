@@ -6,7 +6,6 @@ import { Inject } from '@nestjs/common';
 import type { IItemRepository } from '../domain/item.repository.interface';
 import { ITEM_REPOSITORY } from '../domain/item.repository.interface';
 
-@UseGuards(JwtAuthGuard)
 @Controller('itens')
 export class ItemController {
   constructor(
@@ -14,11 +13,13 @@ export class ItemController {
     @Inject(ITEM_REPOSITORY) private readonly itemRepository: IItemRepository
   ) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   criar(@Body() criarItemDto: CriarItemDto) {
     return this.criarItemUseCase.executar(criarItemDto);
   }
 
+  // leitura do cardápio liberada sem JWT
   @Get('restaurante/:id')
   listar(@Param('id') id: string) {
     return this.itemRepository.listarPorRestaurante(id);

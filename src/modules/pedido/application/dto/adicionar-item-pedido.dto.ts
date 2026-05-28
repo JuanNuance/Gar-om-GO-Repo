@@ -1,11 +1,11 @@
-import { IsInt, IsNotEmpty, IsUUID, Min } from 'class-validator';
+import { IsInt, IsNotEmpty, IsString, Min } from 'class-validator';
 
 export class AdicionarItemPedidoDto {
-  @IsUUID()
+  @IsString()
   @IsNotEmpty()
   pedidoId: string;
 
-  @IsUUID()
+  @IsString()
   @IsNotEmpty()
   itemId: string;
 

@@ -4,8 +4,10 @@ import { CriarRestauranteUseCase } from './application/criar-restaurante.use-cas
 import { PgRestauranteRepository } from './infrastructure/repositories/pg-restaurante.repository';
 import { RESTAURANTE_REPOSITORY } from './domain/restaurante.repository.interface';
 import { DatabaseService } from '../../common/infrastructure/database/database.service';
+import { AdministradorModule } from '../administrador/administrador.module';
 
 @Module({
+  imports: [AdministradorModule],
   controllers: [RestauranteController],
   providers: [
     DatabaseService,

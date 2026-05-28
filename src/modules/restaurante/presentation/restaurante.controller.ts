@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Inject } from '@nestjs/common';
 import { CriarRestauranteUseCase } from '../application/criar-restaurante.use-case';
-import { CriarRestauranteDto } from '../application/dto/criar-restaurante.dto';
+import { CriarRestauranteComAdministradorDto } from '../application/dto/criar-restaurante-com-administrador.dto';
 import type { IRestauranteRepository } from '../domain/restaurante.repository.interface';
 import { RESTAURANTE_REPOSITORY } from '../domain/restaurante.repository.interface';
 
@@ -12,7 +12,7 @@ export class RestauranteController {
   ) {}
 
   @Post()
-  criar(@Body() dto: CriarRestauranteDto) {
+  criar(@Body() dto: CriarRestauranteComAdministradorDto) {
     return this.criarRestauranteUseCase.executar(dto);
   }
 

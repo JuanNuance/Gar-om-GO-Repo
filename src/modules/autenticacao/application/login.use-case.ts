@@ -18,8 +18,13 @@ export class LoginUseCase {
       throw new UnauthorizedException('Credenciais inválidas');
     }
 
+    const senha = dto.password ?? dto.senha;
+    if (!senha) {
+      throw new UnauthorizedException('Credenciais inválidas');
+    }
+
     const senhaCorreta = await this.servicoHash.compare(
-      dto.password,
+      senha,
       administrador.passwordHash,
     );
 
