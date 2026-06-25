@@ -48,4 +48,19 @@ export class PgMesaRepository implements IMesaRepository {
     );
     return this.mapToDomain(result.rows[0]);
   }
+  async atualizar(id: string, dados: Partial<Mesa>): Promise<Mesa> {
+    const result = await this.databaseService.query(
+      `UPDATE mesa SET numero = COALESCE($1, numero), capacidade = COALESCE($2, capacidade), status = COALESCE($3, status), restaurante_id = COALESCE($4, restaurante_id) WHERE id = $5 RETURNING *`,
+      [dados.numero, dados.capacidade, dados.status, dados.restauranteId, id],
+    );
+    return this.mapToDomain(result.rows[0]);
+  }
+
+  async deletar(id: string): Promise<void> {
+    await this.databaseService.query(
+      `DELETE FROM mesa WHERE id = $1`,
+      [id],
+    );
+  }
 }
+

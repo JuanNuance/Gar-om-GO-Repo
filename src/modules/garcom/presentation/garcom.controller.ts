@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards, Inject } from '@nestjs/common';
+import { Body, Controller, Delete, Put, Get, Param, Post, UseGuards, Inject } from '@nestjs/common';
 import { CriarGarcomUseCase } from '../application/criar-garcom.use-case';
 import { CriarGarcomDto } from '../application/dto/criar-garcom.dto';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
@@ -22,4 +22,14 @@ export class GarcomController {
   listar(@Param('id') id: string) {
     return this.garcomRepository.listarPorRestaurante(id);
   }
+  @Put(':id')
+  atualizar(@Param('id') id: string, @Body() dados: any) {
+    return this.garcomRepository.atualizar(id, dados);
+  }
+
+  @Delete(':id')
+  deletar(@Param('id') id: string) {
+    return this.garcomRepository.deletar(id);
+  }
 }
+

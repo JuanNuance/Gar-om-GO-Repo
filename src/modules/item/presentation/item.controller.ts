@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Put, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { CriarItemUseCase } from '../application/criar-item.use-case';
 import { CriarItemDto } from '../application/dto/criar-item.dto';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
@@ -23,4 +23,14 @@ export class ItemController {
   listar(@Param('id') id: string) {
     return this.itemRepository.listarPorRestaurante(id);
   }
+  @Put(':id')
+  atualizar(@Param('id') id: string, @Body() dados: any) {
+    return this.itemRepository.atualizar(id, dados);
+  }
+
+  @Delete(':id')
+  deletar(@Param('id') id: string) {
+    return this.itemRepository.deletar(id);
+  }
 }
+

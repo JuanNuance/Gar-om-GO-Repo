@@ -27,4 +27,19 @@ export class PgRestauranteRepository implements IRestauranteRepository {
     );
     return result.rows.map((row) => this.mapToDomain(row));
   }
+  async atualizar(id: string, dados: Partial<Restaurante>): Promise<Restaurante> {
+    const result = await this.databaseService.query(
+      `UPDATE restaurante SET nome = COALESCE($1, nome), cnpj = COALESCE($2, cnpj), endereco = COALESCE($3, endereco) WHERE id = $4 RETURNING *`,
+      [dados.nome, dados.cnpj, dados.endereco, id],
+    );
+    return this.mapToDomain(result.rows[0]);
+  }
+
+  async deletar(id: string): Promise<void> {
+    await this.databaseService.query(
+      `DELETE FROM restaurante WHERE id = $1`,
+      [id],
+    );
+  }
 }
+

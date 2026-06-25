@@ -44,4 +44,19 @@ export class PgItemRepository implements IItemRepository {
     );
     return result.rows[0] ? this.mapToDomain(result.rows[0]) : null;
   }
+  async atualizar(id: string, dados: Partial<Item>): Promise<Item> {
+    const result = await this.databaseService.query(
+      `UPDATE item SET nome = COALESCE($1, nome), descricao = COALESCE($2, descricao), preco = COALESCE($3, preco), categoria = COALESCE($4, categoria), restaurante_id = COALESCE($5, restaurante_id) WHERE id = $6 RETURNING *`,
+      [dados.nome, dados.descricao, dados.preco, dados.categoria, dados.restauranteId, id],
+    );
+    return this.mapToDomain(result.rows[0]);
+  }
+
+  async deletar(id: string): Promise<void> {
+    await this.databaseService.query(
+      `DELETE FROM item WHERE id = $1`,
+      [id],
+    );
+  }
 }
+

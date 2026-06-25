@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Inject } from '@nestjs/common';
+import { Body, Controller, Param, Delete, Put, Get, Post, Inject } from '@nestjs/common';
 import { CriarRestauranteUseCase } from '../application/criar-restaurante.use-case';
 import { CriarRestauranteDto } from '../application/dto/criar-restaurante.dto';
 import type { IRestauranteRepository } from '../domain/restaurante.repository.interface';
@@ -20,4 +20,14 @@ export class RestauranteController {
   listar() {
     return this.restauranteRepository.listarTodos();
   }
+  @Put(':id')
+  atualizar(@Param('id') id: string, @Body() dados: any) {
+    return this.restauranteRepository.atualizar(id, dados);
+  }
+
+  @Delete(':id')
+  deletar(@Param('id') id: string) {
+    return this.restauranteRepository.deletar(id);
+  }
 }
+
