@@ -9,6 +9,7 @@ import { GarcomModule } from './modules/garcom/garcom.module';
 import { MesaModule } from './modules/mesa/mesa.module';
 import { ItemModule } from './modules/item/item.module';
 import { PedidoModule } from './modules/pedido/pedido.module';
+import { CozinhaModule } from './modules/cozinha/cozinha.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { PedidoModule } from './modules/pedido/pedido.module';
     MesaModule,
     ItemModule,
     PedidoModule,
+    CozinhaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

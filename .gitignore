@@ -404,3 +404,5 @@ DETALHES_IMPLEMENTACAO.md
 DOCUMENTACAO_PROJETO.md
 
 init-db.sql
+schema.sql
+add_columns.js

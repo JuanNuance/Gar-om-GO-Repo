@@ -7,9 +7,10 @@ import { PgPedidoRepository } from './infrastructure/repositories/pg-pedido.repo
 import { PEDIDO_REPOSITORY } from './domain/pedido.repository.interface';
 import { DatabaseService } from '../../common/infrastructure/database/database.service';
 import { ItemModule } from '../item/item.module';
+import { CozinhaModule } from '../cozinha/cozinha.module';
 
 @Module({
-  imports: [ItemModule],
+  imports: [ItemModule, CozinhaModule],
   controllers: [PedidoController],
   providers: [
     DatabaseService,
